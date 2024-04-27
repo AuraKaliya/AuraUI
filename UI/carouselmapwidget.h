@@ -43,6 +43,10 @@ class CarouselMapWidget : public UIWidget
 {
     Q_OBJECT
 public:
+    enum CardPosition{
+        left,right
+    };
+public:
 
     void initWidget()override;
 
@@ -85,6 +89,10 @@ public:
     void setNormalCardSize(const QSize &newNormalCardSize);
 
 
+    int animationDuration() const;
+    void setAnimationDuration(int newAnimationDuration);
+    QPoint cardPosByIndex(CardPosition posFlag,int index);
+
 public slots:
     void preLabel();
     void preLabel(int);
@@ -101,10 +109,11 @@ signals:
 
 private:
     QSize m_currentCardSize;
+    double m_ratio;
     QSize m_normalCardSize;
 
     int m_margin;
-
+    int m_animationDuration;
 
     // QMap<QLabel*,QRect>m_maskGroup;
     QVector<ClickLabel*>m_cardGroup;
@@ -115,7 +124,7 @@ private:
     int m_currentIdx;
     int m_nextIdx;
 
-    bool animationLock;
+    bool m_animationLock;
 
     QPropertyAnimation* m_animation;
 

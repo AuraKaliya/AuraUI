@@ -4,6 +4,7 @@
 #include <QKeyEvent>
 #include <QWidget>
 #include <QStackedWidget>
+#include <QTextEdit>
 #include <QMap>
 #include <QVector>
 
@@ -11,13 +12,12 @@
 #include <QApplication>
 
 
-
-
 #include "UI/uistyle.h"
 
 #include "UI/testwidget.h"
 #include "UI/wheelslidewidget.h"
 #include "UI/carouselmapwidget.h"
+#include "UI/logwidget.h"
 
 
 
@@ -47,9 +47,11 @@ private:
     WheelSlideWidget* m_btnWidget;
 
     QStackedWidget* m_showWidget;
+    logWidget * m_logWidget;
 
     QMap<QString,QVector<UIWidget*> *> m_UIDictionary;
     QMap<QString,int>m_UIToIndexDictionary;
+    QMap<QString,QPair<QPoint,QPoint> >m_UIPosDictionary;
 
     QDir * m_dir;
 

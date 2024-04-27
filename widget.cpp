@@ -9,7 +9,7 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    resize(300,720);
+    resize(800,720);
 
     m_uiStyle=new UIStyle("Default");
     UIStyle::initStyle(m_uiStyle,UIStyle::Json);
@@ -18,6 +18,7 @@ Widget::Widget(QWidget *parent)
 
     m_showWidget=new QStackedWidget(this);
 
+    m_logWidget=new logWidget(this);
 }
 
 Widget::~Widget()
@@ -48,6 +49,7 @@ void Widget::addNewUI(QString uiName)
     });
 
     m_UIToIndexDictionary.insert(uiName,m_showWidget->indexOf(widget));
+    m_UIPosDictionary.insert(uiName,QPair<QPoint,QPoint>{QPoint(40,10),QPoint(10,10)});
 }
 
 void Widget::addNewWidgetInUI(QString uiName, UIWidget *w)
@@ -59,13 +61,42 @@ void Widget::addNewWidgetInUI(QString uiName, UIWidget *w)
         qDebug()<<"Widget::addNewWidgetInUI | UIDictionary:"<<m_UIDictionary;
         return;
     }
+    //qDebug()<<"Widget::addNewWidgetInUI | check1 .";
+    connect(w,&UIWidget::logSignal,m_logWidget,&logWidget::addLog);
+    //qDebug()<<"Widget::addNewWidgetInUI | check2 .";
 
-    w->resize(300,180);
+    QPoint pos;
+    QPoint hWidgetPos=m_UIPosDictionary[uiName].first;
+    QPoint vWidgetPos=m_UIPosDictionary[uiName].second;
+    if(w->uiDirectionFlag()==UIWidget::Horizon)
+    {
+        w->resize(320,180);
 
-    int widgetCount=it.value()->size();
+        pos=hWidgetPos;
+
+        hWidgetPos.setY(hWidgetPos.y()+180+10);
+        vWidgetPos.setY(hWidgetPos.y());
+    }
+    else
+    {
+        w->resize(180,320);
+        pos=vWidgetPos;
+
+        if(vWidgetPos.x()>50)
+        {
+            vWidgetPos.setX(10);
+            vWidgetPos.setY(vWidgetPos.y()+320+10);
+            hWidgetPos.setY(vWidgetPos.y());
+        }
+        else
+        {
+            vWidgetPos.setX(10+180+20);
+        }
+    }
+    m_UIPosDictionary[uiName]=QPair<QPoint,QPoint>(hWidgetPos,vWidgetPos);
 
     WheelSlideWidget* showUI=static_cast< WheelSlideWidget*>(m_showWidget->widget(m_UIToIndexDictionary.find(uiName).value()));
-    showUI->addWidgetInArea(w,0,widgetCount*(w->height()+10));
+    showUI->addWidgetInArea(w,pos.x(),pos.y());
 
     it.value()->append(w);
 
@@ -73,23 +104,34 @@ void Widget::addNewWidgetInUI(QString uiName, UIWidget *w)
 
 void Widget::init()
 {
-    m_btnWidget->setGeometry(0,0,300,50);
+    m_btnWidget->setGeometry(0,0,400,50);
     m_btnWidget->setBorder(10);
     m_btnWidget->setWheelDirection(WheelSlideWidget::HDirection);
 
-    m_showWidget->setGeometry(0,70,300,650);
+    m_showWidget->setGeometry(0,70,400,650);
 
+    m_logWidget->setGeometry(400,0,400,720);
+
+    //m_logWidget->setReadOnly(true);
+    //m_logWidget->setEnabled(false);
 
 
     addNewUI("Widget");
 
 
     CarouselMapWidget* w1=new CarouselMapWidget();
-
+    w1->initWidget();
     addNewWidgetInUI("Widget",w1);
-    w1->addLabel(new ClickLabel("Label1"));
-    w1->addLabel(new ClickLabel("Label2"));
-    w1->addLabel(new ClickLabel("Label3"));
+
+    ClickLabel* lb1=new ClickLabel("Label1");
+    lb1->setStyleSheet("background-color:rgb(140,180,250)");
+    ClickLabel* lb2=new ClickLabel("Label2");
+    lb2->setStyleSheet("background-color:rgb(170,180,250)");
+    ClickLabel* lb3=new ClickLabel("Label3");
+    lb3->setStyleSheet("background-color:rgb(220,180,250)");
+    w1->addLabel(lb1);
+    w1->addLabel(lb2);
+    w1->addLabel(lb3);
     w1->initShow();
 
 }

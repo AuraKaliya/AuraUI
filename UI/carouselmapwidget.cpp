@@ -2,7 +2,8 @@
 
 void CarouselMapWidget::initWidget()
 {
-
+   connect(m_leftBtn,SIGNAL(clicked()),this,SLOT(preLabel()));
+   connect(m_rightBtn,SIGNAL(clicked()),this,SLOT(nextLabel()));
 }
 
 void CarouselMapWidget::initCardSize(QSize curSize, QSize norSize)
@@ -38,18 +39,16 @@ void CarouselMapWidget::initShow()
     for(int i=m_currentIdx+1;i<m_cardGroup.size();++i)
     {
         QWidget* rWidget=m_cardGroup[i];
-        QWidget* preWidget=m_cardGroup[i-1];
         rWidget->resize(m_normalCardSize);
-        rWidget->move(preWidget->x()+(preWidget->width()/2)+m_margin , (height()-rWidget->height())/2);
+        rWidget->move(cardPosByIndex(CardPosition::right,i-m_currentIdx));
     }
 
     //CurrentCard左边的Card
     for(int i=m_currentIdx-1;i>=0;--i)
     {
         QWidget* lWidget=m_cardGroup[i];
-        QWidget* preWidget=m_cardGroup[i+1];
         lWidget->resize(m_normalCardSize);
-        lWidget->move(preWidget->x()-(preWidget->width()/2)-lWidget->width()-m_margin , (height()-lWidget->height())/2);
+        lWidget->move(cardPosByIndex(CardPosition::left,m_currentIdx-i));
     }
 
     for(auto it:m_cardGroup)
@@ -74,10 +73,6 @@ void CarouselMapWidget::initShow()
     }
 
     //==============check=========================
-
-
-
-
 }
 
 
@@ -110,8 +105,10 @@ CarouselMapWidget::CarouselMapWidget(QWidget *parent)
 {
     m_cardSizeFlag=false;
     m_margin=10;
+    m_ratio=0.9;
+    m_animationDuration=1000;
+    m_animationLock=false;
 
-    animationLock=false;
 
     m_leftBtn=new QPushButton("←",this);
     m_rightBtn=new QPushButton("→",this);
@@ -284,70 +281,6 @@ void CarouselMapWidget::initZ()
     m_rightBtn->raise();
 }
 
-//void CarouselMapWidget::initTest()
-//{
-//    resize(1150,250);
-//    for (int count = 0; count < 10; ++count) {
-
-//        ClickLabel * lb=new ClickLabel(this);
-//        lb->setStyleSheet("background:rgb("+QString::number(count*10+50)+",150,"+QString::number(count*15+100)+");");
-//        m_carsouseLabelGroup.append(lb);
-
-//    }
-//    m_currentSize=QSize(450,240);
-//    m_normalSize=QSize(356,190);
-//    m_margin=20;
-//    int i=0;
-//   // m_currentIdx=m_carsouseLabelGroup.size()-1;
-//    m_currentIdx=0;
-////    for (auto it:m_carsouseLabelGroup)
-////    {
-////        it->setParent(this);
-
-////        if(i==m_currentIdx)
-////        {
-////            it->resize(m_currentSize);
-////            it->move((width()-m_currentSize.width())/2,(height()-m_currentSize.height())/2);
-////        }
-////        else
-////        {
-////            it->resize(m_normalSize);
-////            it->move(((width()-m_normalSize.width())/2)+i*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2);
-////        }
-////        ++i;
-////    }
-//    for (auto it:m_carsouseLabelGroup)
-//    {
-//        it->setParent(this);
-//        if(i==m_currentIdx)
-//        {
-//          it->resize(m_currentSize);
-//          it->move((width()-m_currentSize.width())/2,(height()-m_currentSize.height())/2);
-//        }
-//         else
-//        {
-
-//          it->resize(m_normalSize);
-//        it->move(((width()-m_normalSize.width())/2)+(i-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2);
-//        }
-//        ++i;
-//    }
-
-//    m_carsouseLabelGroup[m_currentIdx]->raise();
-
-
-
-//    m_rightBtn->setGeometry(1100,15,50,220);
-//    m_leftBtn->setGeometry(0,15,50,220);
-
-//    m_rightBtn->setStyleSheet("border-image:url(:/UI/RESOURCE/test_rightBtn.png);");
-//    m_leftBtn->setStyleSheet("border-image:url(:/UI/RESOURCE/test_leftBtn.png);");
-
-//   // connect(m_rightBtn,&QPushButton::clicked,this,&CarouselMapWidget::nextLabel);
-//   // connect(m_leftBtn,&QPushButton::clicked,this,&CarouselMapWidget::preLabel);
-//    initZ();
-//}
-
 void CarouselMapWidget::addLabel(ClickLabel *lb)
 {
     lb->setParent(this);
@@ -363,417 +296,148 @@ void CarouselMapWidget::setMargin(int margin)
 
 void CarouselMapWidget::preLabel()
 {
+    //检查触发条件： 当前序列号>0  动画准备就绪
+    //向前移动（左）
+    if((m_currentIdx>0)&&!m_animationLock)
+    {
+        m_animationLock=true;
 
-//    if((m_currentIdx>0)&&!animationLock)
-//    {
-//        animationLock=true;
-//        QParallelAnimationGroup *group=new QParallelAnimationGroup();
-//        --m_currentIdx;
-//        m_preIdx=m_currentIdx+1;
-//        if(m_currentIdx<0)
-//        {
-//            m_nextIdx=m_currentIdx-1;
-//        }else
-//        {
-//            m_nextIdx=-2;
-//        }
+        QParallelAnimationGroup *group=new QParallelAnimationGroup();
+        --m_currentIdx;
 
+        QVector<QPropertyAnimation *>animationPosList;
 
-//        QPropertyAnimation *animationNowSize=new QPropertyAnimation(m_carsouseLabelGroup[m_preIdx],"geometry");
-//        animationNowSize->setDuration(1000);
-//        QObject::connect(animationNowSize,&QPropertyAnimation::finished,[this](){
-//            qDebug()<<"hahahahahahaha";
-//            qDebug()<<"preSize"<<m_carsouseLabelGroup[m_preIdx]->geometry();
-//            update();
-//        });
-//        QObject::connect(animationNowSize,&QPropertyAnimation::valueChanged,[this](){
-//            update();
-//        });
+        for (int i=0;i<m_cardGroup.size();++i)
+        {
+            QPropertyAnimation *animation =new QPropertyAnimation(m_cardGroup[i],"geometry");
+            QRect startRect;
+            QRect endRect;
+            animation->setDuration(m_animationDuration);
+            QObject::connect(animation,&QPropertyAnimation::finished,[=](){
+                //qDebug()<<"otherSize"<<m_carsouseLabelGroup[i]->geometry();
+            });
+            QObject::connect(animation,&QPropertyAnimation::valueChanged,[this](){
+                update();
+            });
 
-//        qDebug()<<"start:"<<m_currentSize;
-//        qDebug()<<"End:"<<m_normalSize;
-//        animationNowSize->setStartValue(m_carsouseLabelGroup[m_preIdx]->geometry());
-//        animationNowSize->setEndValue(QRect(((width()-m_normalSize.width())/2)+(m_preIdx-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2,m_normalSize.width(),m_normalSize.height()));
-//        //qDebug()<<m_carsouseLabelGroup[m_currentIdx];
-//        group->addAnimation(animationNowSize);
+            startRect=m_cardGroup[i]->geometry();
+            animation->setStartValue(startRect);
 
+            if(i==m_currentIdx)
+            {
+                m_cardGroup[i]->raise();
+                endRect=QRect((width()-m_currentCardSize.width())/2,(height()-m_currentCardSize.height())/2,m_currentCardSize.width(),m_currentCardSize.height());
+            }
+            else
+            {
+                CardPosition tmpFlag=CardPosition::left;
+                if(m_currentIdx>i)
+                {
+                    tmpFlag=CardPosition::left;
+                }
+                else
+                {
+                    tmpFlag=CardPosition::right;
+                }
+                endRect=QRect(cardPosByIndex(tmpFlag,abs(m_currentIdx-i)),m_normalCardSize);
+            }
+            animation->setEndValue(endRect);
+            animationPosList<<animation;
+            group->addAnimation(animation);
+        }
 
+        connect(group,&QParallelAnimationGroup::finished,[this](){
+            m_animationLock=false;
+            update();
+        });
+        initZ();
+        group->start(QAbstractAnimation::DeleteWhenStopped);
 
-
-
-//        m_carsouseLabelGroup[m_currentIdx]->raise();
-//        QVector<QPropertyAnimation *>animationPosList;
-//        int i=0;
-//        for (auto it:m_carsouseLabelGroup)
-//        {
-//            if(it==m_carsouseLabelGroup[m_preIdx]||it==m_carsouseLabelGroup[m_currentIdx])
-//            {
-//                ++i;
-//                continue;
-//            }
-//            QPropertyAnimation *animation =new QPropertyAnimation(it,"pos");
-//            animation->setDuration(1000);
-//            QObject::connect(animation,&QPropertyAnimation::finished,[=](){
-//                qDebug()<<"otherSize"<<m_carsouseLabelGroup[i]->geometry();
-//            });
-//            QObject::connect(animation,&QPropertyAnimation::valueChanged,[this](){
-//                update();
-//            });
-//            QPoint targetPos=QPoint(((width()-m_normalSize.width())/2)+(i-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2);
-//            animation->setEndValue(targetPos);
-//            animationPosList<<animation;
-//            group->addAnimation(animation);
-//            ++i;
-//        }
-
-
-//        QPropertyAnimation *animationNextSize=new QPropertyAnimation(m_carsouseLabelGroup[m_currentIdx],"geometry");
-//        animationNextSize->setDuration(1000);
-//        QObject::connect(animationNextSize,&QPropertyAnimation::finished,[this](){
-//            qDebug()<<"nowSize"<<m_carsouseLabelGroup[m_currentIdx]->geometry();
-//            update();
-//        });
-//        QObject::connect(animationNextSize,&QPropertyAnimation::valueChanged,[this](){
-//            update();
-//        });
-
-
-//        animationNextSize->setStartValue(m_carsouseLabelGroup[m_currentIdx]->geometry());
-//        animationNextSize->setEndValue(QRect(((width()-m_currentSize.width())/2)+(m_currentIdx-m_currentIdx)*(m_currentSize.width()+m_margin),(height()-m_currentSize.height())/2,m_currentSize.width(),m_currentSize.height()));
-
-//        group->addAnimation(animationNextSize);
-
-//        connect(group,&QParallelAnimationGroup::finished,[this](){
-//            animationLock=false;
-//             emit nowStory(m_carsouseLabelGroup[m_currentIdx]->getCardID());
-//           // preLabel();
-//        });
-
-//        group->start(QAbstractAnimation::DeleteWhenStopped);
-//        initZ();
-//        //        for(auto it : animationPosList)
-//        //            it->start(QAbstractAnimation::DeleteWhenStopped);
-
-//    }
-//    else
-//    {
-//        return;
-//    }
+    }
+    else
+    {
+        QString logInfo="CarouselMapWidget::preLabel | ignore. Current Index:"+QString::number(m_currentIdx);
+        //qDebug()<<"CarouselMapWidget::preLabel | ignore.";
+        emit logSignal(logInfo,AuraUI::Action);
+        return;
+    }
 
 }
 
 void CarouselMapWidget::preLabel(int cx)
 {
-//    if((m_currentIdx>0)&&!animationLock)
-//    {
-//        int c=cx;
-//        if(c<=0) {
-//            emit nowStory(m_carsouseLabelGroup[m_currentIdx]->getCardID());
-//            return;}
 
-//        animationLock=true;
-//        QParallelAnimationGroup *group=new QParallelAnimationGroup();
-//        --m_currentIdx;
-//        m_preIdx=m_currentIdx+1;
-//        if(m_currentIdx<0)
-//        {
-//            m_nextIdx=m_currentIdx-1;
-//        }else
-//        {
-//            m_nextIdx=-2;
-//        }
-
-
-//        QPropertyAnimation *animationNowSize=new QPropertyAnimation(m_carsouseLabelGroup[m_preIdx],"geometry");
-//        animationNowSize->setDuration(1000);
-//        QObject::connect(animationNowSize,&QPropertyAnimation::finished,[this](){
-//            qDebug()<<"hahahahahahaha";
-//            qDebug()<<"preSize"<<m_carsouseLabelGroup[m_preIdx]->geometry();
-//            update();
-//        });
-//        QObject::connect(animationNowSize,&QPropertyAnimation::valueChanged,[this](){
-//            update();
-//        });
-
-//        qDebug()<<"start:"<<m_currentSize;
-//        qDebug()<<"End:"<<m_normalSize;
-//        animationNowSize->setStartValue(m_carsouseLabelGroup[m_preIdx]->geometry());
-//        animationNowSize->setEndValue(QRect(((width()-m_normalSize.width())/2)+(m_preIdx-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2,m_normalSize.width(),m_normalSize.height()));
-//        //qDebug()<<m_carsouseLabelGroup[m_currentIdx];
-//        group->addAnimation(animationNowSize);
-
-
-
-
-
-//        m_carsouseLabelGroup[m_currentIdx]->raise();
-//        QVector<QPropertyAnimation *>animationPosList;
-//        int i=0;
-//        for (auto it:m_carsouseLabelGroup)
-//        {
-//            if(it==m_carsouseLabelGroup[m_preIdx]||it==m_carsouseLabelGroup[m_currentIdx])
-//            {
-//                ++i;
-//                continue;
-//            }
-//            QPropertyAnimation *animation =new QPropertyAnimation(it,"pos");
-//            animation->setDuration(1000);
-//            QObject::connect(animation,&QPropertyAnimation::finished,[=](){
-//                qDebug()<<"otherSize"<<m_carsouseLabelGroup[i]->geometry();
-//            });
-//            QObject::connect(animation,&QPropertyAnimation::valueChanged,[this](){
-//                update();
-//            });
-//            QPoint targetPos=QPoint(((width()-m_normalSize.width())/2)+(i-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2);
-//            animation->setEndValue(targetPos);
-//            animationPosList<<animation;
-//            group->addAnimation(animation);
-//            ++i;
-//        }
-
-
-//        QPropertyAnimation *animationNextSize=new QPropertyAnimation(m_carsouseLabelGroup[m_currentIdx],"geometry");
-//        animationNextSize->setDuration(1000);
-//        QObject::connect(animationNextSize,&QPropertyAnimation::finished,[this](){
-//            qDebug()<<"nowSize"<<m_carsouseLabelGroup[m_currentIdx]->geometry();
-//            update();
-//        });
-//        QObject::connect(animationNextSize,&QPropertyAnimation::valueChanged,[this](){
-//            update();
-//        });
-
-
-//        animationNextSize->setStartValue(m_carsouseLabelGroup[m_currentIdx]->geometry());
-//        animationNextSize->setEndValue(QRect(((width()-m_currentSize.width())/2)+(m_currentIdx-m_currentIdx)*(m_currentSize.width()+m_margin),(height()-m_currentSize.height())/2,m_currentSize.width(),m_currentSize.height()));
-
-//        group->addAnimation(animationNextSize);
-
-//        connect(group,&QParallelAnimationGroup::finished,[=](){
-//            animationLock=false;
-//            preLabel(c-1);
-//        });
-
-//        group->start(QAbstractAnimation::DeleteWhenStopped);
-//        initZ();
-//        //        for(auto it : animationPosList)
-//        //            it->start(QAbstractAnimation::DeleteWhenStopped);
-
-//    }
-//    else
-//    {
-//        return;
-//    }
 }
 
 void CarouselMapWidget::nextLabel()
 {
-//    if((m_currentIdx<m_carsouseLabelGroup.size()-1)&&!animationLock)
-//    {
-//        animationLock=true;
-//        QParallelAnimationGroup *group=new QParallelAnimationGroup();
-//        ++m_currentIdx;
-//        m_preIdx=m_currentIdx-1;
-//        if(m_currentIdx<m_carsouseLabelGroup.size()-1)
-//        {
-//            m_nextIdx=m_currentIdx+1;
-//        }else
-//        {
-//            m_nextIdx=-1;
-//        }
+    if((m_currentIdx<m_cardGroup.size()-1)&&!m_animationLock)
+    {
+        m_animationLock=true;
 
+        QParallelAnimationGroup *group=new QParallelAnimationGroup();
+        ++m_currentIdx;
 
-//        QPropertyAnimation *animationNowSize=new QPropertyAnimation(m_carsouseLabelGroup[m_preIdx],"geometry");
-//        animationNowSize->setDuration(1000);
-//        QObject::connect(animationNowSize,&QPropertyAnimation::finished,[this](){
-//            //qDebug()<<"hahahahahahaha";
-//           // qDebug()<<"preSize"<<m_carsouseLabelGroup[m_preIdx]->geometry();
-//            update();
-//        });
-//        QObject::connect(animationNowSize,&QPropertyAnimation::valueChanged,[this](){
-//            update();
-//        });
+        QVector<QPropertyAnimation *>animationPosList;
 
-//       // qDebug()<<"start:"<<m_currentSize;
-//       // qDebug()<<"End:"<<m_normalSize;
-//        animationNowSize->setStartValue(m_carsouseLabelGroup[m_preIdx]->geometry());
-//        animationNowSize->setEndValue(QRect(((width()-m_normalSize.width())/2)+(m_preIdx-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2,m_normalSize.width(),m_normalSize.height()));
-//        //qDebug()<<m_carsouseLabelGroup[m_currentIdx];
-//        group->addAnimation(animationNowSize);
+        for (int i=0;i<m_cardGroup.size();++i)
+        {
+            QPropertyAnimation *animation =new QPropertyAnimation(m_cardGroup[i],"geometry");
+            QRect startRect;
+            QRect endRect;
+            animation->setDuration(m_animationDuration);
+            QObject::connect(animation,&QPropertyAnimation::finished,[=](){
+                //qDebug()<<"otherSize"<<m_carsouseLabelGroup[i]->geometry();
+            });
+            QObject::connect(animation,&QPropertyAnimation::valueChanged,[this](){
+                update();
+            });
 
+            startRect=m_cardGroup[i]->geometry();
+            animation->setStartValue(startRect);
 
+            if(i==m_currentIdx)
+            {
+                m_cardGroup[i]->raise();
+                endRect=QRect((width()-m_currentCardSize.width())/2,(height()-m_currentCardSize.height())/2,m_currentCardSize.width(),m_currentCardSize.height());
+            }
+            else
+            {
+                CardPosition tmpFlag=CardPosition::left;
+                if(m_currentIdx>i)
+                {
+                    tmpFlag=CardPosition::left;
+                }
+                else
+                {
+                    tmpFlag=CardPosition::right;
+                }
+                endRect=QRect(cardPosByIndex(tmpFlag,abs(m_currentIdx-i)),m_normalCardSize);
+            }
+            animation->setEndValue(endRect);
 
+            animationPosList<<animation;
+            group->addAnimation(animation);
+        }
 
-
-//        m_carsouseLabelGroup[m_currentIdx]->raise();
-//        QVector<QPropertyAnimation *>animationPosList;
-//        int i=0;
-//        for (auto it:m_carsouseLabelGroup)
-//        {
-//            if(it==m_carsouseLabelGroup[m_preIdx]||it==m_carsouseLabelGroup[m_currentIdx])
-//            {
-//                ++i;
-//                continue;
-//            }
-//            QPropertyAnimation *animation =new QPropertyAnimation(it,"pos");
-//            animation->setDuration(1000);
-//            QObject::connect(animation,&QPropertyAnimation::finished,[=](){
-//                qDebug()<<"otherSize"<<m_carsouseLabelGroup[i]->geometry();
-//            });
-//            QObject::connect(animation,&QPropertyAnimation::valueChanged,[this](){
-//                update();
-//            });
-//            QPoint targetPos=QPoint(((width()-m_normalSize.width())/2)+(i-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2);
-//            animation->setEndValue(targetPos);
-//            animationPosList<<animation;
-//            group->addAnimation(animation);
-//            ++i;
-//        }
-
-
-//            QPropertyAnimation *animationNextSize=new QPropertyAnimation(m_carsouseLabelGroup[m_currentIdx],"geometry");
-//            animationNextSize->setDuration(1000);
-//            QObject::connect(animationNextSize,&QPropertyAnimation::finished,[this](){
-//              //  qDebug()<<"nowSize"<<m_carsouseLabelGroup[m_currentIdx]->geometry();
-//                update();
-//            });
-//            QObject::connect(animationNextSize,&QPropertyAnimation::valueChanged,[this](){
-//                update();
-//            });
-
-
-//            animationNextSize->setStartValue(m_carsouseLabelGroup[m_currentIdx]->geometry());
-//            animationNextSize->setEndValue(QRect(((width()-m_currentSize.width())/2)+(m_currentIdx-m_currentIdx)*(m_currentSize.width()+m_margin),(height()-m_currentSize.height())/2,m_currentSize.width(),m_currentSize.height()));
-
-//            group->addAnimation(animationNextSize);
-
-//        connect(group,&QParallelAnimationGroup::finished,[this](){
-//            animationLock=false;
-//                emit nowStory(m_carsouseLabelGroup[m_currentIdx]->getCardID());
-//            //nextLabel();
-//        });
-
-//            for(auto it=m_maskGroup.begin();it!=m_maskGroup.end();it++)
-//        {
-//            it.key()->raise();
-//        }
-//        group->start(QAbstractAnimation::DeleteWhenStopped);
-//        initZ();
-////        for(auto it : animationPosList)
-////            it->start(QAbstractAnimation::DeleteWhenStopped);
-
-//    }
-//    else
-//    {
-//        return;
-//    }
+        connect(group,&QParallelAnimationGroup::finished,[this](){
+            m_animationLock=false;
+            update();
+        });
+        initZ();
+        group->start(QAbstractAnimation::DeleteWhenStopped);
+    }
+    else
+    {
+        QString logInfo="CarouselMapWidget::nextLabel | ignore. Current Index:"+QString::number(m_currentIdx);
+        //qDebug()<<"CarouselMapWidget::nextLabel | ignore.";
+        emit logSignal(logInfo,AuraUI::Action);
+        return;
+    }
 }
 
 void CarouselMapWidget::nextLabel(int cx)
 {
-//    if((m_currentIdx<m_carsouseLabelGroup.size()-1)&&!animationLock)
-//    {
-//        int c=cx;
-//        if(c<=0) {
-//            emit nowStory(m_carsouseLabelGroup[m_currentIdx]->getCardID());
-//            return;
-//        }
-//        animationLock=true;
-//        QParallelAnimationGroup *group=new QParallelAnimationGroup();
-//        ++m_currentIdx;
-//        m_preIdx=m_currentIdx-1;
-//        if(m_currentIdx<m_carsouseLabelGroup.size()-1)
-//        {
-//            m_nextIdx=m_currentIdx+1;
-//        }else
-//        {
-//            m_nextIdx=-1;
-//        }
-
-
-//        QPropertyAnimation *animationNowSize=new QPropertyAnimation(m_carsouseLabelGroup[m_preIdx],"geometry");
-//        animationNowSize->setDuration(1000);
-//        QObject::connect(animationNowSize,&QPropertyAnimation::finished,[this](){
-//          //  qDebug()<<"hahahahahahaha";
-//          //  qDebug()<<"preSize"<<m_carsouseLabelGroup[m_preIdx]->geometry();
-//            update();
-//        });
-//        QObject::connect(animationNowSize,&QPropertyAnimation::valueChanged,[this](){
-//            update();
-//        });
-
-//      //  qDebug()<<"start:"<<m_currentSize;
-//      //  qDebug()<<"End:"<<m_normalSize;
-//        animationNowSize->setStartValue(m_carsouseLabelGroup[m_preIdx]->geometry());
-//        animationNowSize->setEndValue(QRect(((width()-m_normalSize.width())/2)+(m_preIdx-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2,m_normalSize.width(),m_normalSize.height()));
-//        //qDebug()<<m_carsouseLabelGroup[m_currentIdx];
-//        group->addAnimation(animationNowSize);
-
-
-
-
-
-//        m_carsouseLabelGroup[m_currentIdx]->raise();
-//        QVector<QPropertyAnimation *>animationPosList;
-//        int i=0;
-//        for (auto it:m_carsouseLabelGroup)
-//        {
-//            if(it==m_carsouseLabelGroup[m_preIdx]||it==m_carsouseLabelGroup[m_currentIdx])
-//            {
-//                ++i;
-//                continue;
-//            }
-//            QPropertyAnimation *animation =new QPropertyAnimation(it,"pos");
-//            animation->setDuration(1000);
-//            QObject::connect(animation,&QPropertyAnimation::finished,[=](){
-//                qDebug()<<"otherSize"<<m_carsouseLabelGroup[i]->geometry();
-//            });
-//            QObject::connect(animation,&QPropertyAnimation::valueChanged,[this](){
-//                update();
-//            });
-//            QPoint targetPos=QPoint(((width()-m_normalSize.width())/2)+(i-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2);
-//            animation->setEndValue(targetPos);
-//            animationPosList<<animation;
-//            group->addAnimation(animation);
-//            ++i;
-//        }
-
-
-//        QPropertyAnimation *animationNextSize=new QPropertyAnimation(m_carsouseLabelGroup[m_currentIdx],"geometry");
-//        animationNextSize->setDuration(1000);
-//        QObject::connect(animationNextSize,&QPropertyAnimation::finished,[this](){
-//          //  qDebug()<<"nowSize"<<m_carsouseLabelGroup[m_currentIdx]->geometry();
-//            update();
-//        });
-//        QObject::connect(animationNextSize,&QPropertyAnimation::valueChanged,[this](){
-//            update();
-//        });
-
-
-//        animationNextSize->setStartValue(m_carsouseLabelGroup[m_currentIdx]->geometry());
-//        animationNextSize->setEndValue(QRect(((width()-m_currentSize.width())/2)+(m_currentIdx-m_currentIdx)*(m_currentSize.width()+m_margin),(height()-m_currentSize.height())/2,m_currentSize.width(),m_currentSize.height()));
-
-//        group->addAnimation(animationNextSize);
-
-//        connect(group,&QParallelAnimationGroup::finished,[=](){
-//            animationLock=false;
-//            nextLabel(c-1);
-//        });
-
-//        for(auto it=m_maskGroup.begin();it!=m_maskGroup.end();it++)
-//        {
-//            it.key()->raise();
-//        }
-//        group->start(QAbstractAnimation::DeleteWhenStopped);
-//        initZ();
-//        //        for(auto it : animationPosList)
-//        //            it->start(QAbstractAnimation::DeleteWhenStopped);
-
-//    }
-//    else
-//    {
-//        return;
-//    }
-
 
 }
 
@@ -804,6 +468,41 @@ void CarouselMapWidget::resizeEvent(QResizeEvent *e)
 
     qDebug()<<"CarouselMapWidget::resizeEvent | check CurrentSize:"<<m_currentCardSize;
     qDebug()<<"CarouselMapWidget::resizeEvent | check NormalSize:"<<m_normalCardSize;
+}
+
+int CarouselMapWidget::animationDuration() const
+{
+    return m_animationDuration;
+}
+
+void CarouselMapWidget::setAnimationDuration(int newAnimationDuration)
+{
+    m_animationDuration = newAnimationDuration;
+}
+
+QPoint CarouselMapWidget::cardPosByIndex(CardPosition posFlag, int index)
+{
+    QPoint res;
+    int x=0;
+    int y=0;
+    if(posFlag==CardPosition::left)
+    {
+        x=width()/2-index*m_margin-m_normalCardSize.width();
+        y=(height()-m_normalCardSize.height())/2;
+            res.setX(x);
+            res.setY(y);
+    }
+    else
+    {
+            x=width()/2+index*m_margin;
+            y=(height()-m_normalCardSize.height())/2;
+            res.setX(x);
+            res.setY(y);
+    }
+
+
+
+    return res;
 }
 
 QSize CarouselMapWidget::normalCardSize() const

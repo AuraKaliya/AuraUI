@@ -4,6 +4,7 @@ UIWidget::UIWidget(QWidget *parent)
     : QWidget{parent}
 {
     m_autoInitUIStyleFlag=false;
+    m_uiDirectionFlag=UIWidget::Horizon;
 }
 
 void UIWidget::initWidget()
@@ -31,5 +32,15 @@ bool UIWidget::autoInitUIStyleFlag() const
 void UIWidget::setAutoInitUIStyleFlag(bool newAutoInitUIStyleFlag)
 {
     m_autoInitUIStyleFlag = newAutoInitUIStyleFlag;
+}
+
+UIWidget::UIDirection UIWidget::uiDirectionFlag() const
+{
+    return m_uiDirectionFlag;
+}
+
+void UIWidget::setUiDirectionFlag(UIWidget::UIDirection newUiDirectionFlag)
+{
+    m_uiDirectionFlag = newUiDirectionFlag;
 }
 
