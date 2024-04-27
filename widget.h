@@ -18,6 +18,7 @@
 #include "UI/wheelslidewidget.h"
 #include "UI/carouselmapwidget.h"
 #include "UI/logwidget.h"
+#include "UI/slidewidget.h"
 
 
 

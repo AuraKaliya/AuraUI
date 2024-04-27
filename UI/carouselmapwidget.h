@@ -11,32 +11,18 @@
 #include <QSize>
 #include <QRect>
 
-
 #include <QDir>
 #include <QApplication>
-
-
-
-
 
 #include "clicklabel.h"
 #include "uiwidget.h"
 
 /*
-
 用于轮播效果的窗体
 需要做到：轮播部件的深度切换、部件的缩放和平移
 需要有一个Vector
-
-
 */
 
-
-/*
-另一种实现方案：
-列表直接排列设置当前scale和正常scale，
-
-*/
 
 
 class CarouselMapWidget : public UIWidget
@@ -56,25 +42,12 @@ public:
 
     void initShow();
 
-
-
     void init();
-
 
     explicit CarouselMapWidget(QWidget *parent = nullptr);
 
-
-    //void initCarousel(QVector<ClickLabel*> lbg,QSize curSize,QSize norSize,int margin);
-    //void initCarousel(QVector<ClickLabel*> lbg);
-
-    //void initChangeBtn(QString btn1N,QString btn2N);
-    //void initMask(QMap<QLabel*,QRect>mask);
-
-    //void initMaskTest();
-
     void initZ();
 
-   // void initTest();
 
     void addLabel(ClickLabel* lb);
 

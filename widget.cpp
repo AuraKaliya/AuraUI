@@ -115,9 +115,7 @@ void Widget::init()
     //m_logWidget->setReadOnly(true);
     //m_logWidget->setEnabled(false);
 
-
     addNewUI("Widget");
-
 
     CarouselMapWidget* w1=new CarouselMapWidget();
     w1->initWidget();
@@ -133,6 +131,10 @@ void Widget::init()
     w1->addLabel(lb2);
     w1->addLabel(lb3);
     w1->initShow();
+
+    SlideWidget * w2=new SlideWidget();
+    w2->initWidget();
+    addNewWidgetInUI("Widget",w2);
 
 }
 
