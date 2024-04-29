@@ -1,152 +1,55 @@
 #pragma once
+#include <string>
+#include <map>
+#include <functional>
 
-#include<QString>
-#include <QMap>
-#include <QObject>
-
-
-/*
-    提供QObject和QWidget两种原基类的引申类模板，方便构造基于元对象系统的多态族和基于窗体的多态族
-*/
-
-
-template<class T>
+template <class T, typename... Args>
 class Factory
 {
 public:
-
-    static Factory<T>* GetInstance()
+    static Factory<T, Args...>* GetInstance()
     {
-        if(m_instance==nullptr)
+        if (m_instance == nullptr)
         {
-            m_instance=new Factory();
+            m_instance = new Factory();
         }
         return m_instance;
-    };
+    }
 
-    void RegisterClass(const QString &objectName,T* objectClass)
+    void RegisterClass(const std::string& objectName, std::function< T* ( Args... ) > objectClass)
     {
-        m_factoryCreator[objectName]=objectClass;
-    };
-    void RegisterObject(const QString &objectName,std::function<T*(QObject*)> objectClass)
-    {
-        m_factoryObjectCreator.insert(objectName,objectClass);
-    };
-    void RegisterWidget(const QString &objectName,std::function<T*(QWidget*)> objectClass)
-    {
-        m_factoryWidgetCreator.insert(objectName,objectClass);
-    };
+        m_factoryCreator[objectName] = objectClass;
+    }
 
-    T* CreateClass(const QString &objectName)
+    T* CreateClass(const std::string& objectName, Args... args)
     {
-        auto it=m_factoryCreator.find(objectName);
-        if(it!=m_factoryCreator.end())
+        auto it = m_factoryCreator.find(objectName);
+        if (it != m_factoryCreator.end())
         {
-            return it.value()();
+            return it->second(args...);
         }
         else
         {
             return nullptr;
         }
-    };
-
-
-    T* CreateObject(const QString &objectName,QObject* parent=nullptr)
-    {
-        auto it=m_factoryObjectCreator.find(objectName);
-        if(it!=m_factoryObjectCreator.end())
-        {
-            return it.value()(parent);
-        }
-        else
-        {
-            return nullptr;
-        }
-    };
-
-
-    T* CreateWidget(const QString &objectName,QWidget* parent=nullptr)
-    {
-        auto it=m_factoryWidgetCreator.find(objectName);
-        if(it!=m_factoryWidgetCreator.end())
-        {
-            return it.value()(parent);
-        }
-        else
-        {
-            return nullptr;
-        }
-    };
-
+    }
 
 private:
+    static Factory<T, Args...>* m_instance;
 
-    static Factory<T>* m_instance;
+    Factory() = default;
 
-    Factory()=default;
-
-    QMap<QString,T*>m_factoryCreator;
-    QMap<QString,std::function<T*(QObject*)> >m_factoryObjectCreator;
-    QMap<QString,std::function<T*(QWidget*)> >m_factoryWidgetCreator;
+    std::map<std::string, std::function<T* (Args...) > > m_factoryCreator;
 };
 
+template <class T, class... Args>
+Factory<T, Args...>* Factory<T, Args...>::m_instance = nullptr;
 
-template<class T>
-Factory<T>* Factory<T>::m_instance=nullptr;
-
-
-
-template <typename T,typename Base>
-std::function<Base*()> createFactoryCreator()
+template <class T, class Base, class... Args>
+std::function<Base* (Args...)> createFactoryCreator()
 {
-    return []() ->Base*
+    return [](Args... arg) ->Base*
     {
-        return new T();
+        return new T(arg...);
     };
 }
-
-//////////////////////////////////////////////
-
-template <typename T,typename Base>
-std::function<Base*(QObject*)> createObjectFactoryCreator()
-{
-    return [](QObject* parent) ->Base*
-    {
-        return new T(parent);
-    };
-}
-
-template <typename T,typename Base>
-std::function<Base*(QObject*)> createObjectFactoryCreatorSingle()
-{
-    return [](QObject* parent) ->Base*
-    {
-        return T::GetInstance();
-    };
-}
-
-
-//////////////////////////////////////////////
-
-
-template <typename T,typename Base>
-std::function<Base*(QWidget*)> createWidgetFactoryCreator()
-{
-    return [](QWidget* parent) ->Base*
-    {
-        return new T(parent);
-    };
-}
-
-template <typename T,typename Base>
-std::function<Base*(QWidget*)> createWidgetCreatorSingle()
-{
-    return [](QWidget* parent) ->Base*
-    {
-        return T::GetInstance();
-    };
-}
-
-
-
-

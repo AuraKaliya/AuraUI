@@ -115,8 +115,8 @@ void Widget::init()
     //m_logWidget->setReadOnly(true);
     //m_logWidget->setEnabled(false);
 
+    //====================================Widget====================================
     addNewUI("Widget");
-
     CarouselMapWidget* w1=new CarouselMapWidget();
     w1->initWidget();
     addNewWidgetInUI("Widget",w1);
@@ -135,6 +135,24 @@ void Widget::init()
     SlideWidget * w2=new SlideWidget();
     w2->initWidget();
     addNewWidgetInUI("Widget",w2);
+    //====================================Widget====================================end
+
+    //====================================Chart====================================
+    addNewUI("Chart");
+    ChartWidget* chart1=new ChartWidget();
+    chart1->initWidget();
+    addNewWidgetInUI("Chart",chart1);
+
+    //====================================Chart====================================end
+
+    //====================================OpenGL====================================
+    addNewUI("OpenGL");
+    EncapsulatedWidget * enOpenGLWidget1=new EncapsulatedWidget();
+    AuraOpenGLWidget* openGLWidget1=new AuraOpenGLWidget();
+    enOpenGLWidget1->setWidget(openGLWidget1);
+    addNewWidgetInUI("OpenGL",enOpenGLWidget1);
+    //====================================OpenGL====================================end
+
 
 }
 

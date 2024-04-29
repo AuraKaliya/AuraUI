@@ -19,8 +19,11 @@
 #include "UI/carouselmapwidget.h"
 #include "UI/logwidget.h"
 #include "UI/slidewidget.h"
+#include "UI/chartwidget.h"
+#include "UI/auraopenglwidget.h"
 
 
+#include "UI/encapsulatedwidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
