@@ -23,5 +23,5 @@ private:
 signals:
 
 };
-
+REGISTER_CLASS(ChartWidget,UIWidget,QWidget*)
 #endif // CHARTWIDGET_H

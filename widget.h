@@ -10,24 +10,30 @@
 
 #include <QDir>
 #include <QApplication>
-
-
 #include "UI/uistyle.h"
-
-#include "UI/testwidget.h"
 #include "UI/wheelslidewidget.h"
-#include "UI/carouselmapwidget.h"
+#include "UI/uiwidget.h"
 #include "UI/logwidget.h"
-#include "UI/slidewidget.h"
-#include "UI/chartwidget.h"
 #include "UI/auraopenglwidget.h"
 
+#include "TOOL/Factory.hpp"
+
+///////////////////////////////////////////////
+#include "UI/carouselmapwidget.h"
+
+#include "UI/slidewidget.h"
+#include "UI/chartwidget.h"
 
 #include "UI/encapsulatedwidget.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class Widget; }
-QT_END_NAMESPACE
+//////////////////////////////////////////////
+
+
+
+
+//QT_BEGIN_NAMESPACE
+//namespace Ui { class Widget; }
+//QT_END_NAMESPACE
 
 class Widget : public QWidget
 {
@@ -44,7 +50,7 @@ public:
 protected:
     void keyPressEvent(QKeyEvent*e)override;
 private:
-    Ui::Widget *ui;
+    //Ui::Widget *ui;
 
     UIStyle* m_uiStyle;
 

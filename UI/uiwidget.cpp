@@ -12,6 +12,11 @@ void UIWidget::initWidget()
 
 }
 
+void UIWidget::initWidget(const QJsonObject &obj)
+{
+
+}
+
 void UIWidget::setUIStyle(const UIStyle &style)
 {
     if(m_autoInitUIStyleFlag)
@@ -42,5 +47,13 @@ UIWidget::UIDirection UIWidget::uiDirectionFlag() const
 void UIWidget::setUiDirectionFlag(UIWidget::UIDirection newUiDirectionFlag)
 {
     m_uiDirectionFlag = newUiDirectionFlag;
+}
+
+void UIWidget::paintEvent(QPaintEvent *e)
+{
+    QWidget::paintEvent(e);
+    QPainter p(this);
+    p.setPen(QPen(Qt::red));
+    p.drawRect(QRect(rect().x(),rect().y(),rect().width()-1,rect().height()-1));
 }
 

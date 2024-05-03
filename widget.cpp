@@ -1,13 +1,13 @@
 #include "widget.h"
-#include "./ui_widget.h"
+//#include "./ui_widget.h"
 
 #include <QPushButton>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::Widget)
+    //, ui(new Ui::Widget)
 {
-    ui->setupUi(this);
+    //ui->setupUi(this);
 
     resize(800,720);
 
@@ -23,14 +23,15 @@ Widget::Widget(QWidget *parent)
 
 Widget::~Widget()
 {
-    delete ui;
+
 }
 
 void Widget::addNewUI(QString uiName)
 {
     int uiCount=m_UIDictionary.count();
     QPushButton * btn=new QPushButton(uiName);
-    btn->resize(50,30);
+    btn->setMinimumSize(50,30);
+    btn->adjustSize();
     m_btnWidget->addWidgetInArea(btn,5+uiCount*(btn->width()+10),10);
 
     QVector<UIWidget*> * vector=new QVector<UIWidget*> ();
@@ -117,29 +118,25 @@ void Widget::init()
 
     //====================================Widget====================================
     addNewUI("Widget");
-    CarouselMapWidget* w1=new CarouselMapWidget();
+    //CarouselMapWidget* w1=new CarouselMapWidget();
+    UIWidget * w1=Factory<UIWidget,QWidget*>::GetInstance()->CreateClass("CarouselMapWidget",nullptr);
     w1->initWidget();
     addNewWidgetInUI("Widget",w1);
 
-    ClickLabel* lb1=new ClickLabel("Label1");
-    lb1->setStyleSheet("background-color:rgb(140,180,250)");
-    ClickLabel* lb2=new ClickLabel("Label2");
-    lb2->setStyleSheet("background-color:rgb(170,180,250)");
-    ClickLabel* lb3=new ClickLabel("Label3");
-    lb3->setStyleSheet("background-color:rgb(220,180,250)");
-    w1->addLabel(lb1);
-    w1->addLabel(lb2);
-    w1->addLabel(lb3);
-    w1->initShow();
-
-    SlideWidget * w2=new SlideWidget();
+    UIWidget * w2=Factory<UIWidget,QWidget*>::GetInstance()->CreateClass("SlideWidget",nullptr);
     w2->initWidget();
     addNewWidgetInUI("Widget",w2);
+
+
+    UIWidget * w3=Factory<UIWidget,int,int,QWidget*>::GetInstance()->CreateClass("PieWidget",5,50,nullptr);
+    w3->initWidget();
+    addNewWidgetInUI("Widget",w3);
     //====================================Widget====================================end
 
     //====================================Chart====================================
     addNewUI("Chart");
-    ChartWidget* chart1=new ChartWidget();
+
+    UIWidget* chart1=Factory<UIWidget,QWidget*>::GetInstance()->CreateClass("ChartWidget",nullptr);
     chart1->initWidget();
     addNewWidgetInUI("Chart",chart1);
 
@@ -147,10 +144,11 @@ void Widget::init()
 
     //====================================OpenGL====================================
     addNewUI("OpenGL");
-    EncapsulatedWidget * enOpenGLWidget1=new EncapsulatedWidget();
+
     AuraOpenGLWidget* openGLWidget1=new AuraOpenGLWidget();
-    enOpenGLWidget1->setWidget(openGLWidget1);
+    UIWidget * enOpenGLWidget1=Factory<UIWidget,QWidget*,QWidget*>::GetInstance()->CreateClass("EncapsulatedWidget",openGLWidget1,nullptr);
     addNewWidgetInUI("OpenGL",enOpenGLWidget1);
+
     //====================================OpenGL====================================end
 
 

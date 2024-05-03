@@ -42,18 +42,14 @@ public:
 
     void initShow();
 
-    void init();
 
     explicit CarouselMapWidget(QWidget *parent = nullptr);
 
     void initZ();
 
-
     void addLabel(ClickLabel* lb);
 
-
     void setMargin(int margin)             ;
-
 
     QSize currentCardSize() const;
     void setCurrentCardSize(const QSize &newCurrentCardSize);
@@ -61,18 +57,15 @@ public:
     QSize normalCardSize() const;
     void setNormalCardSize(const QSize &newNormalCardSize);
 
-
     int animationDuration() const;
     void setAnimationDuration(int newAnimationDuration);
     QPoint cardPosByIndex(CardPosition posFlag,int index);
 
 public slots:
     void preLabel();
-    void preLabel(int);
-    void nextLabel(int);
+//    void preLabel(int);
+//    void nextLabel(int);
     void nextLabel();
-
-
 
 protected:
     void resizeEvent(QResizeEvent*e) override;
@@ -106,5 +99,5 @@ private:
     bool m_cardSizeFlag;
 
 };
-
+REGISTER_CLASS(CarouselMapWidget,UIWidget,QWidget*)
 #endif // CAROUSELMAPWIDGET_H

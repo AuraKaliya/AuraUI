@@ -47,5 +47,6 @@ private:
 signals:
 
 };
+REGISTER_CLASS(SlideWidget,UIWidget,QWidget*)
 
 #endif // SLIDEWIDGET_H

@@ -3,10 +3,21 @@
 
 #include <QWidget>
 #include <QVector>
-
+#include <QPainter>
+#include <QJsonObject>
+#include <QJsonArray>
 
 #include "uistyle.h"
 #include "AuraUIConstValue.h"
+
+
+
+
+
+//=========================加入反射
+#include "../TOOL/Registor.hpp"
+//===============================
+
 
 class UIWidget : public QWidget
 {
@@ -19,6 +30,7 @@ public:
 public:
     explicit UIWidget(QWidget *parent = nullptr);
     virtual void initWidget();
+    virtual void initWidget(const QJsonObject& obj);
     virtual void setUIStyle(const UIStyle & style);
 
     //==================控制位======================
@@ -29,6 +41,7 @@ public:
 protected:
     void setAutoInitUIStyleFlag(bool newAutoInitUIStyleFlag);
     void setUiDirectionFlag(UIWidget::UIDirection newUiDirectionFlag);
+    void paintEvent(QPaintEvent*e)override;
 private:
     //专门用于管理UIStyle的容器
     QVector<UIWidget*> m_widgetList;

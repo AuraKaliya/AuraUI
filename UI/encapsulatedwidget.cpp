@@ -1,9 +1,10 @@
 #include "encapsulatedwidget.h"
 
-EncapsulatedWidget::EncapsulatedWidget(QWidget *parent)
+EncapsulatedWidget::EncapsulatedWidget(QWidget *centerWidget, QWidget *parent)
     : UIWidget{parent}
 {
     m_initFlag=false;
+    setWidget(centerWidget);
 }
 
 void EncapsulatedWidget::setWidget(QWidget *w)

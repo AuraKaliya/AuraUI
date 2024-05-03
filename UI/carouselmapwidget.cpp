@@ -4,6 +4,19 @@ void CarouselMapWidget::initWidget()
 {
    connect(m_leftBtn,SIGNAL(clicked()),this,SLOT(preLabel()));
    connect(m_rightBtn,SIGNAL(clicked()),this,SLOT(nextLabel()));
+
+
+   ClickLabel* lb1=new ClickLabel("Label1");
+   lb1->setStyleSheet("background-color:rgb(140,180,250)");
+   ClickLabel* lb2=new ClickLabel("Label2");
+   lb2->setStyleSheet("background-color:rgb(170,180,250)");
+   ClickLabel* lb3=new ClickLabel("Label3");
+   lb3->setStyleSheet("background-color:rgb(220,180,250)");
+   addLabel(lb1);
+   addLabel(lb2);
+   addLabel(lb3);
+   initShow();
+
 }
 
 void CarouselMapWidget::initCardSize(QSize curSize, QSize norSize)
@@ -76,29 +89,6 @@ void CarouselMapWidget::initShow()
 }
 
 
-void CarouselMapWidget::init()
-{
-    //组件init
-    //init btn
-    //m_rightBtn->setGeometry(1100,15,50,220);
-    //m_leftBtn->setGeometry(0,15,50,220);
-
-
-
-    //m_rightBtn->setStyleSheet("border-image:url("+m_rightBtnPixUrl+");");
-    //m_leftBtn->setStyleSheet("border-image:url("+m_leftBtnPixUrl+");");
-
-
-
-    //内部connect
-    //connect(m_rightBtn,SIGNAL(clicked()),this,SLOT(nextLabel()));
-    //connect(m_leftBtn,SIGNAL(clicked()),this,SLOT(preLabel()));
-
-
-    //其他init
-    initZ();
-
-}
 
 CarouselMapWidget::CarouselMapWidget(QWidget *parent)
     : UIWidget{parent}
@@ -113,152 +103,8 @@ CarouselMapWidget::CarouselMapWidget(QWidget *parent)
     m_leftBtn=new QPushButton("←",this);
     m_rightBtn=new QPushButton("→",this);
 
-    //m_currentSize=QSize(450,240);
-    //m_normalSize=QSize(356,190);
-
 }
 
-//void CarouselMapWidget::initCarousel(QVector<ClickLabel *> lbg, QSize curSize, QSize norSize, int margin)
-//{
-//    //resize(1600,900);
-
-//    for(auto it : m_carsouseLabelGroup)
-//    {
-//        it->setVisible(false);
-//        delete it;
-//    }
-//    if(lbg.size()==0)
-//    {
-//        qDebug()<<"没有剧情！";
-//        return;
-//    }
-//    m_carsouseLabelGroup.clear();
-
-//    update();
-//    m_carsouseLabelGroup=lbg;
-//    m_currentSize=curSize;
-//    m_normalSize=norSize;
-//    m_margin=margin;
-//    int i=0;
-//    // m_currentIdx=m_carsouseLabelGroup.size()-1;
-//    m_currentIdx=0;
-//    for (auto it:m_carsouseLabelGroup)
-//    {
-//        it->setParent(this);
-//        if(i==m_currentIdx)
-//        {
-//            it->resize(m_currentSize);
-//            it->move((width()-m_currentSize.width())/2,(height()-m_currentSize.height())/2);
-//        }
-//        else
-//        {
-
-//            it->resize(m_normalSize);
-//            it->move(((width()-m_normalSize.width())/2)+(i-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2);
-//        }
-//        //qDebug()<<QPoint((width()-m_currentSize.width())/2,(height()-m_currentSize.height())/2));
-//        ++i;
-
-//    }
-
-//    m_carsouseLabelGroup[m_currentIdx]->raise();
-
-//initZ();
-
-
-//}
-
-//void CarouselMapWidget::initCarousel(QVector<ClickLabel *> lbg)
-//{
-////resize(1600,900);
-
-
-////qDebug()<<"哈哈哈哈哈！";
-//for(auto it : m_carsouseLabelGroup)
-//{
-//        it->setVisible(false);
-//        delete it;
-//}
-//m_carsouseLabelGroup.clear();
-//if(lbg.size()==0)
-//{
-//        //qDebug()<<"没有剧情！2";
-//        return;
-//}
-////qDebug()<<"哈哈哈哈哈！";
-
-
-//update();
-//m_carsouseLabelGroup=lbg;
-//int i=0;
-//// m_currentIdx=m_carsouseLabelGroup.size()-1;
-//m_currentIdx=0;
-//for (auto it:m_carsouseLabelGroup)
-//{
-//        it->setParent(this);
-//        if(i==m_currentIdx)
-//        {
-//            it->resize(m_currentSize);
-//            it->move((width()-m_currentSize.width())/2,(height()-m_currentSize.height())/2);
-//        }
-//        else
-//        {
-
-//            it->resize(m_normalSize);
-//            it->move(((width()-m_normalSize.width())/2)+(i-m_currentIdx)*(m_normalSize.width()+m_margin),(height()-m_normalSize.height())/2);
-//        }
-//        //qDebug()<<QPoint((width()-m_currentSize.width())/2,(height()-m_currentSize.height())/2));
-//        ++i;
-//}
-
-//    if(m_carsouseLabelGroup.size()!=0)
-//        m_carsouseLabelGroup[m_currentIdx]->raise();
-
-//initZ();
-//}
-
-//void CarouselMapWidget::initChangeBtn(QString btn1N, QString btn2N)
-//{
-//    m_rightBtn->setGeometry(1100,15,50,220);
-//    m_leftBtn->setGeometry(0,15,50,220);
-
-//    m_rightBtn->setStyleSheet("border-image:url(:/UI/RESOURCE/test_rightBtn.png);");
-//    m_leftBtn->setStyleSheet("border-image:url(:/UI/RESOURCE/test_leftBtn.png);");
-//    connect(m_rightBtn,SIGNAL(clicked()),this,SLOT(nextLabel()));
-//    connect(m_leftBtn,SIGNAL(clicked()),this,SLOT(preLabel()));
-//    initZ();
-//}
-
-//void CarouselMapWidget::initMask(QMap<QLabel *, QRect> mask)
-//{
-//    m_maskGroup=mask;
-//    for(auto it=mask.begin();it!=mask.end();it++)
-//    {
-//        it.key()->setParent(this);
-//        it.key()->setVisible(true);
-//        it.key()->setGeometry(it.value());
-//        it.key()->raise();
-//    }
-//}
-
-//void CarouselMapWidget::initMaskTest()
-//{
-//    QLabel* lb1=new QLabel(this);
-//   QRect rect1=QRect(0,0,500,900);
-//   lb1->setStyleSheet("border-image:url(:/UI/RESOURCE/test_Background_mask1.png);");
-
-
-
-//    QLabel * lb2=new QLabel(this);
-//  QRect rect2=QRect(1100,0,500,900);
-//  lb2->setStyleSheet("border-image:url(:/UI/RESOURCE/test_Background_mask2.png);");
-//    QMap<QLabel *, QRect> tmpMap;
-
-//    tmpMap.insert(lb1,rect1);
-//    tmpMap.insert(lb2,rect2);
-//    initMask(tmpMap);
-
-//}
 
 void CarouselMapWidget::initZ()
 {
@@ -364,10 +210,6 @@ void CarouselMapWidget::preLabel()
 
 }
 
-void CarouselMapWidget::preLabel(int cx)
-{
-
-}
 
 void CarouselMapWidget::nextLabel()
 {
@@ -436,10 +278,6 @@ void CarouselMapWidget::nextLabel()
     }
 }
 
-void CarouselMapWidget::nextLabel(int cx)
-{
-
-}
 
 void CarouselMapWidget::resizeEvent(QResizeEvent *e)
 {
@@ -499,8 +337,6 @@ QPoint CarouselMapWidget::cardPosByIndex(CardPosition posFlag, int index)
             res.setX(x);
             res.setY(y);
     }
-
-
 
     return res;
 }
