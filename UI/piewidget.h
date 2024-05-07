@@ -25,7 +25,7 @@ public:
 
     QPoint getRotatePoint(QPoint O,int r,double angel);
 
-    const double Pi=3.1415926535;
+
     int innerLength() const;
     void setInnerLength(int newInnerLength);
     int sectorContains(QPoint p,QRect roundRect,int labelCount,int offsetAngel=0);
@@ -39,6 +39,7 @@ protected:
     void mouseMoveEvent(QMouseEvent*e)override;
 
 private:
+    const double Pi=3.1415926535;
     int m_nowIndex;
     QVector<PieWidget::LabelState> m_labelStateList;
     QVector<QPoint> m_labelCenterPointList;

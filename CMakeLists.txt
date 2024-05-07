@@ -22,9 +22,10 @@ file(GLOB UISOURCE "*.h" "*.cpp" "UI/*.h" "UI/*.cpp" "TOOL/*.hpp")
 
 
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets )
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Charts  REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core  REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -58,6 +59,7 @@ endif()
 
 target_link_libraries(AuraUI PRIVATE    Qt${QT_VERSION_MAJOR}::Widgets
                                         Qt${QT_VERSION_MAJOR}::Charts
+                                        Qt${QT_VERSION_MAJOR}::Core
                                         Qt6::OpenGLWidgets
                                         Qt6::OpenGL
                                         Eigen3::Eigen

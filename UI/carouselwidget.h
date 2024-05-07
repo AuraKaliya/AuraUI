@@ -1,12 +1,15 @@
-#ifndef CAROUSELMAPWIDGET_H
-#define CAROUSELMAPWIDGET_H
+#ifndef CAROUSELWIDGET_H
+#define CAROUSELWIDGET_H
 
 #include <QWidget>
+
 #include <QLabel>
+#include <QPushButton>
 #include <QVector>
 #include <QPropertyAnimation>
-#include <QPushButton>
+#include <QSequentialAnimationGroup>
 #include <QParallelAnimationGroup>
+
 #include <QString>
 #include <QSize>
 #include <QRect>
@@ -17,65 +20,43 @@
 #include "clicklabel.h"
 #include "uiwidget.h"
 
-/*
-用于轮播效果的窗体
-需要做到：轮播部件的深度切换、部件的缩放和平移
-需要有一个Vector
-*/
 
-
-
-class CarouselMapWidget : public UIWidget
+class CarouselWidget : public UIWidget
 {
     Q_OBJECT
 public:
-    enum CardPosition{
-        left,right
-    };
-public:
-
+    explicit CarouselWidget(QWidget *parent = nullptr);
     void initWidget()override;
-
-    void initCardSize(QSize curSize,QSize norSize);
-
+    void initCardSize(QSize norSize);
     void setBtnPix(QString leftPixPath,QString rightPixPath);
+    void setMargin(int margin);
 
+    void addLabel(ClickLabel* lb);
     void initShow();
-
-    explicit CarouselMapWidget(QWidget *parent = nullptr);
 
     void initZ();
 
-    void addLabel(ClickLabel* lb);
-
-    void setMargin(int margin)             ;
-
-    QSize currentCardSize() const;
-    void setCurrentCardSize(const QSize &newCurrentCardSize);
+    int animationDuration() const;
+    void setAnimationDuration(int newAnimationDuration);
 
     QSize normalCardSize() const;
     void setNormalCardSize(const QSize &newNormalCardSize);
 
-    int animationDuration() const;
-    void setAnimationDuration(int newAnimationDuration);
-    QPoint cardPosByIndex(CardPosition posFlag,int index);
+    QPoint normalCardPos() const;
+    void setNormalCardPos(QPoint newNormalCardPos);
+
+    QSize currentCardSize() const;
 
 public slots:
     void preLabel();
-//    void preLabel(int);
-//    void nextLabel(int);
     void nextLabel();
-
 protected:
     void resizeEvent(QResizeEvent*e) override;
-
-signals:
-    void nowStory(int);
-
 private:
     QSize m_currentCardSize;
     double m_ratio;
     QSize m_normalCardSize;
+    QPoint m_normalCardPos;
 
     int m_margin;
     int m_animationDuration;
@@ -85,18 +66,15 @@ private:
 
     QPushButton * m_leftBtn;
     QPushButton * m_rightBtn;
-    int m_preIdx;
     int m_currentIdx;
-    int m_nextIdx;
 
     bool m_animationLock;
-
-    QPropertyAnimation* m_animation;
 
     QString m_baseSourcePath;
 
     bool m_cardSizeFlag;
+signals:
 
 };
-REGISTER_CLASS(CarouselMapWidget,UIWidget,QWidget*)
-#endif // CAROUSELMAPWIDGET_H
+REGISTER_CLASS(CarouselWidget,UIWidget,QWidget*)
+#endif // CAROUSELWIDGET_H

@@ -131,6 +131,11 @@ void Widget::init()
     UIWidget * w3=Factory<UIWidget,int,int,QWidget*>::GetInstance()->CreateClass("PieWidget",5,50,nullptr);
     w3->initWidget();
     addNewWidgetInUI("Widget",w3);
+
+    UIWidget * w4=Factory<UIWidget,QWidget*>::GetInstance()->CreateClass("CarouselWidget",nullptr);
+    w4->initWidget();
+    addNewWidgetInUI("Widget",w4);
+
     //====================================Widget====================================end
 
     //====================================Chart====================================
