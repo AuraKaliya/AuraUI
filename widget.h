@@ -23,7 +23,6 @@
 
 #include "UI/slidewidget.h"
 #include "UI/chartwidget.h"
-
 #include "UI/encapsulatedwidget.h"
 
 //////////////////////////////////////////////

@@ -18,7 +18,7 @@ find_package(Eigen3 REQUIRED )
 #QT 6
 
 
-file(GLOB UISOURCE "*.h" "*.cpp" "UI/*.h" "UI/*.cpp" "TOOL/*.hpp")
+file(GLOB UISOURCE "*.h" "*.cpp" "UI/*.h" "UI/*.cpp" "TOOL/*.hpp"  "TOOL/*.h" "TOOL/*.cpp")
 
 
 

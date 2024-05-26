@@ -136,6 +136,9 @@ void Widget::init()
     w4->initWidget();
     addNewWidgetInUI("Widget",w4);
 
+    UIWidget * w5=Factory<UIWidget,QWidget*>::GetInstance()->CreateClass("HoverLightBtnWidget",nullptr);
+    w5->initWidget();
+    addNewWidgetInUI("Widget",w5);
     //====================================Widget====================================end
 
     //====================================Chart====================================
