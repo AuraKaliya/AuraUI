@@ -20,10 +20,10 @@
 
 ///////////////////////////////////////////////
 #include "UI/carouselmapwidget.h"
-
 #include "UI/slidewidget.h"
 #include "UI/chartwidget.h"
 #include "UI/encapsulatedwidget.h"
+#include "UI/smallmapwidget.h"
 
 //////////////////////////////////////////////
 

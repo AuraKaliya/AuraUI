@@ -16,7 +16,6 @@ void CarouselMapWidget::initWidget()
    addLabel(lb2);
    addLabel(lb3);
    initShow();
-
 }
 
 void CarouselMapWidget::initCardSize(QSize curSize, QSize norSize)

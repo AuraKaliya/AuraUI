@@ -139,6 +139,11 @@ void Widget::init()
     UIWidget * w5=Factory<UIWidget,QWidget*>::GetInstance()->CreateClass("HoverLightBtnWidget",nullptr);
     w5->initWidget();
     addNewWidgetInUI("Widget",w5);
+
+    UIWidget * w6=Factory<UIWidget,QWidget*>::GetInstance()->CreateClass("SmallMapWidget",nullptr);
+    w6->initWidget();
+    addNewWidgetInUI("Widget",w6);
+
     //====================================Widget====================================end
 
     //====================================Chart====================================
